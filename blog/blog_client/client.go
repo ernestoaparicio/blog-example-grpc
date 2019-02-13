@@ -62,6 +62,9 @@ func updateBlog(client blogpb.BlogServiceClient) {
 }
 
 func deleteBlog(client blogpb.BlogServiceClient) {
-	client.DeleteBlog(context.Background(), &blogpb.DeleteBlogRequest{BlogId: "5c6352e46e429469273571d4"})
-	fmt.Printf("Blog has been deleted.")
+	res, err := client.DeleteBlog(context.Background(), &blogpb.DeleteBlogRequest{BlogId: "5c63532e6e429469273571d5"})
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("Blog id %v has been deleted.", res.BlogId)
 }
