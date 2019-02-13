@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ernestoaparicio/blog-example/blog/blogpb"
 	"google.golang.org/grpc"
+	"io"
 	"log"
 )
 
@@ -24,7 +25,8 @@ func main() {
 	//createBlog(c)
 	//readBlog(c)
 	//updateBlog(c)
-	deleteBlog(c)
+	//deleteBlog(c)
+	listBlogs(c)
 }
 func createBlog(client blogpb.BlogServiceClient) {
 	blog := &blogpb.Blog{
@@ -67,4 +69,25 @@ func deleteBlog(client blogpb.BlogServiceClient) {
 		log.Fatal(err)
 	}
 	fmt.Printf("Blog id %v has been deleted.", res.BlogId)
+}
+
+func listBlogs(client blogpb.BlogServiceClient) {
+	fmt.Sprintf("List all blogs.")
+
+	stream, err := client.ListBlog(context.Background(), &blogpb.ListBlogRequest{})
+
+	if err != nil {
+		log.Fatalf("Error while calling ListBlog service.")
+	}
+
+	for {
+		res, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatalf("Something happened: %v", err)
+		}
+		fmt.Println(res.GetBlog())
+	}
 }

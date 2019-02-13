@@ -21,6 +21,39 @@ var collection *mongo.Collection
 type server struct {
 }
 
+func (server) ListBlog(req *blogpb.ListBlogRequest, stream blogpb.BlogService_ListBlogServer) error {
+	fmt.Sprintln("List Blog request")
+	filter := bson.D{{}}
+	cursor, err := collection.Find(context.Background(), filter)
+	if err != nil {
+		return status.Errorf(
+			codes.NotFound,
+			fmt.Sprintf("Nothing returned from MongoDB"),
+		)
+	}
+
+	defer cursor.Close(context.Background())
+
+	for cursor.Next(context.Background()) {
+		data := &blogItem{}
+		if err := cursor.Decode(data); err != nil {
+			return status.Errorf(codes.Internal, fmt.Sprintf("Error while decoding data from MongoDB: %v", err))
+		}
+		stream.Send(&blogpb.ListBlogResponse{
+			Blog: dataToBlogPb(data),
+		})
+	}
+
+	if err := cursor.Err(); err != nil {
+		return status.Errorf(
+			codes.Internal,
+			fmt.Sprintf("Unknown internal error: %v", err),
+		)
+	}
+
+	return nil
+}
+
 func (server) DeleteBlog(ctx context.Context, req *blogpb.DeleteBlogRequest) (*blogpb.DeleteBlogResponse, error) {
 	fmt.Sprintln("Delete blog request")
 
