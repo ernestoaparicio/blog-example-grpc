@@ -23,7 +23,8 @@ func main() {
 
 	//createBlog(c)
 	//readBlog(c)
-	updateBlog(c)
+	//updateBlog(c)
+	deleteBlog(c)
 }
 func createBlog(client blogpb.BlogServiceClient) {
 	blog := &blogpb.Blog{
@@ -58,4 +59,9 @@ func updateBlog(client blogpb.BlogServiceClient) {
 		log.Fatal(err)
 	}
 	fmt.Printf("Blog has been updated: %v", res)
+}
+
+func deleteBlog(client blogpb.BlogServiceClient) {
+	client.DeleteBlog(context.Background(), &blogpb.DeleteBlogRequest{BlogId: "5c6352e46e429469273571d4"})
+	fmt.Printf("Blog has been deleted.")
 }
