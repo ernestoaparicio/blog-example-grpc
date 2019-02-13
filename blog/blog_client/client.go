@@ -22,7 +22,8 @@ func main() {
 	c := blogpb.NewBlogServiceClient(cc)
 
 	//createBlog(c)
-	readBlog(c)
+	//readBlog(c)
+	updateBlog(c)
 }
 func createBlog(client blogpb.BlogServiceClient) {
 	blog := &blogpb.Blog{
@@ -43,4 +44,18 @@ func readBlog(client blogpb.BlogServiceClient) {
 		log.Fatal(err)
 	}
 	fmt.Printf("Blog has been read: %v", res)
+}
+
+func updateBlog(client blogpb.BlogServiceClient) {
+	blog := &blogpb.Blog{
+		Id:       "5c6352e46e429469273571d4",
+		AuthorId: "Ernie",
+		Title:    "My updated blog 2",
+		Content:  "Content of my updated blog",
+	}
+	res, err := client.UpdateBlog(context.Background(), &blogpb.UpdateBlogRequest{Blog: blog})
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("Blog has been updated: %v", res)
 }
